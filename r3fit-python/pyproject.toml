@@ -1,0 +1,22 @@
+[build-system]
+requires = ["maturin>=1.8,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "r3fit"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "https://github.com/einstein8612/r3fit"
+documentation = "https://github.com/einstein8612/r3fit"
+repository = "https://github.com/einstein8612/r3fit"
+
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
