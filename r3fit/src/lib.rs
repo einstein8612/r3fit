@@ -19,25 +19,81 @@ pub struct Circle {
 }
 
 impl Circle {
+    ///
+    /// Creates a new Circle instance.
+    ///
     pub fn new(x: f64, y: f64, r: f64) -> Self {
         Circle { x, y, r }
     }
 
+    ///
+    /// Calculates the distance squared from the center of the circle to a given point.
+    ///
+    /// # Arguments
+    /// * `point` - A tuple representing the point to calculate the distance to.
+    ///
+    /// # Returns
+    /// The squared distance from the center of the circle to the point.
+    ///
     pub fn distance_squared(&self, point: &(f64, f64)) -> f64 {
         let dx = self.x - point.0;
         let dy = self.y - point.1;
         dx * dx + dy * dy
     }
 
+    ///
+    /// Counts the number of points inside the circle with a given threshold.
+    ///
+    /// # Arguments
+    /// * `points` - A slice of tuples representing the points to check.
+    /// * `threshold` - The threshold for determining if a point is inside the circle.
+    ///
+    /// # Returns
+    /// The number of points inside the circle.
+    ///
     pub fn count_inner_points(&self, points: &[(f64, f64)], threshold: f64) -> usize {
         points.iter().filter(|point| self.is_inner(point, threshold)).count()
     }
 
+    ///
+    /// Checks if a point is inside the circle with a given threshold.
+    ///
+    /// # Arguments
+    /// * `point` - A tuple representing the point to check.
+    /// * `threshold` - The threshold for determining if the point is inside the circle.
+    ///
+    /// # Returns
+    /// A boolean indicating if the point is inside the circle.
+    ///
     pub fn is_inner(&self, point: &(f64, f64), threshold: f64) -> bool {
         let distance_2 = self.distance_squared(point);
         distance_2 > (self.r - threshold).powi(2) && distance_2 < (self.r + threshold).powi(2)
     }
 
+    ///
+    /// Fits a circle to a set of points using the RANSAC algorithm.
+    ///
+    /// # Arguments
+    /// * `points` - A slice of tuples representing the points to fit the circle to.
+    /// * `iter` - The number of iterations to run the RANSAC algorithm.
+    /// * `threshold` - The threshold for determining if a point is inside the circle.
+    /// * `rng` - A mutable reference to a random number generator.
+    ///
+    /// # Returns
+    /// A `Result` containing the fitted circle or a `CircleError` if an error occurred.
+    ///
+    /// # Example
+    /// ```rust
+    /// use r3fit::Circle;
+    ///
+    /// let points = vec![(0.0, 1.0), (1.0, 0.0), (-1.0, 0.0)];
+    /// let circle = Circle::fit(&points, 1000, 0.1).unwrap();
+    ///
+    /// assert_eq!(circle.x, 0.0);
+    /// assert_eq!(circle.y, 0.0);
+    /// assert_eq!(circle.r, 1.0);
+    /// ```
+    ///
     pub fn fit_with_rng(points: &[(f64, f64)], iter: usize, threshold: f64, rng: &mut impl Rng) -> Result<Circle, CircleError> {
         let n = points.len();
         if n < 3 {
@@ -74,6 +130,29 @@ impl Circle {
         Ok(best_circle)
     }
 
+    ///
+    /// Fits a circle to a set of points using the RANSAC algorithm.
+    ///
+    /// # Arguments
+    /// * `points` - A slice of tuples representing the points to fit the circle to.
+    /// * `iter` - The number of iterations to run the RANSAC algorithm.
+    /// * `threshold` - The threshold for determining if a point is inside the circle.
+    ///
+    /// # Returns
+    /// A `Result` containing the fitted circle or a `CircleError` if an error occurred.
+    ///
+    /// # Example
+    /// ```rust
+    /// use r3fit::Circle;
+    ///
+    /// let points = vec![(0.0, 1.0), (1.0, 0.0), (-1.0, 0.0)];
+    /// let circle = Circle::fit(&points, 1000, 0.1).unwrap();
+    ///
+    /// assert_eq!(circle.x, 0.0);
+    /// assert_eq!(circle.y, 0.0);
+    /// assert_eq!(circle.r, 1.0);
+    /// ```
+    ///
     pub fn fit(points: &[(f64, f64)], iter: usize, threshold: f64) -> Result<Circle, CircleError> {
         let mut rng = rand::rng();
         Self::fit_with_rng(points, iter, threshold, &mut rng)
@@ -86,6 +165,19 @@ impl fmt::Display for Circle {
     }
 }
 
+///
+/// Private function to fit a circle to 3 points.
+/// This function is not intended to be used directly.
+/// It is used internally by the `fit` function.
+///
+/// # Arguments
+/// * `p0` - The first point.
+/// * `p1` - The second point.
+/// * `p2` - The third point.
+///
+/// # Returns
+/// A `Result` containing the fitted circle or a `CircleError` if it can't be fitted (degenerate case).
+///
 fn fit_3_points(p0: (f64, f64), p1: (f64, f64), p2: (f64, f64)) -> Result<Circle, CircleError> {
     let d_0 = p0.0 * p0.0 + p0.1 * p0.1;
     let d_1 = p1.0 * p1.0 + p1.1 * p1.1;
