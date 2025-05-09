@@ -1,7 +1,12 @@
 [package]
 name = "r3fit"
+license = "MIT"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/einstein8612/r3fit"
+description = """
+Simple RANSAC algorithm that uses 3 samples to estimate a circle over the given points.
+"""
 
 [dependencies]
 rand = "0.9.1"
