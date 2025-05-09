@@ -85,3 +85,7 @@ print(circle) # Circle(x: -0.010063759065123072, y: 0.0614577470528755, r: 1.033
 As well as the corresponding image.
 
 ![Python Fit](./assets/python-fit.png)
+
+## Derivation
+
+There's a somewhat short [document](assets/RANSAC_Circle_Fitting.pdf), where I put notes for deriving the main formulas used.
