@@ -13,9 +13,9 @@ pub enum CircleError {
 
 #[derive(Clone, Copy, Debug)]
 pub struct Circle {
-    x:  f64,
-    y:  f64,
-    r: f64,
+    pub x: f64,
+    pub y: f64,
+    pub r: f64,
 }
 
 impl Circle {
